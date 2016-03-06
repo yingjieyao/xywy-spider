@@ -1,0 +1,42 @@
+use youwenbida;
+drop table if exists `a_reply`;
+drop table if exists `a_topic`;
+drop table if exists `a_doctor`;
+
+create table a_topic (
+    a_topic_id int primary key auto_increment,
+    department_id_1 int,
+    department_id_2 int,
+    a_topic_owner_id int,
+    a_topic_owner_sex varchar(10),
+    a_topic_owner_age int,
+    a_topic_date date,
+    a_topic_content varchar(32767),
+    a_topic_reply_number int
+);
+create table a_doctor(
+    a_doctor_id int primary key auto_increment,
+    a_doctor_url varchar(255),
+    a_doctor_type varchar(128),
+    a_doctor_follow_number int,
+    a_doctor_news_number int,
+    a_doctor_fan_number_1 int,
+    a_doctor_fan_number_2 int
+);
+create table a_reply(
+    a_reply_id int primary key auto_increment,
+    a_topic_id int,
+    a_reply_date date,
+    a_reply_owner_id int,
+    a_reply_content varchar(32767),
+    a_reply_help_number int,
+    a_reply_adopt int,
+    a_reply_follow_content varchar(32767),
+    a_reply_follow_owner_id int,
+    a_reply_follow_date date,
+    foreign key(a_topic_id) references `a_topic`(a_topic_id),
+    foreign key(a_reply_owner_id) references `a_doctor`(a_doctor_id)
+);
+
+
+

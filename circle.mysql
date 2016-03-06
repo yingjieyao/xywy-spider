@@ -1,0 +1,109 @@
+# create database circle;
+use circle;
+drop table if exists `expert_circle`;
+drop table if exists `illness_user`;
+drop table if exists `expert_illness`;
+drop table if exists `reply`;
+drop table if exists `illness`;
+drop table if exists `expert`;
+drop table if exists `topic`;
+drop table if exists `patient`;
+drop table if exists `circle`;
+drop table if exists `partition`;
+
+create table `circle` (
+    circle_id int(11) primary key auto_increment,
+    circle_name varchar(128),
+    circle_circle_intro varchar(128),
+    circle_suffer_number int(11),
+    circle_expert_number int(11),
+    circle_topic_number int(11),
+    circle_owner_id int(11)
+);
+
+
+create table `partition` (
+    partition_id int(11) primary key auto_increment,
+    partition_name varchar(128)
+);
+
+
+create table `topic` (
+    topic_id int(11) primary key,
+    partition_id int(11),
+    circle_id int(11),
+    topic_title varchar(128),
+    topic_date date,
+    topic_views int(22),
+    topic_reply_number int(11),
+    topic_content varchar(500),
+    topic_owner_id int(11),
+    foreign key(partition_id) references `partition`(partition_id),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+
+create table `patient` (
+    patient_id int(11) primary key,
+    patient_usernmae varchar(128),
+    patient_level real,
+    patient_iden varchar(128),
+    patient_age int(11),
+    patient_other varchar(200),
+    patient_fan_number int(11)
+);
+
+
+create table `illness` (
+    illness_id int(11) primary key,
+    circle_id int(11),
+    illness_name varchar(128),
+    illness_patient_number int(11),
+    illness_doctor_number int(11),
+    illness_topic_number int(11),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+create table `reply` (
+    reply_id int(11) primary key auto_increment,
+    topic_id int(11),
+    patient_id int(11),
+    reply_content varchar(200),
+    reply_time date,
+    reply_follow_patient_id int(11),
+    reply_follow_content varchar(200),
+    reply_follow_date date,
+    foreign key(topic_id) references topic(topic_id),
+    foreign key(patient_id) references patient(patient_id)
+);
+
+
+create table `expert` (
+    expert_id int(11) primary key,
+    expert_star_number int(11),
+    expert_follow_number int(11),
+    expert_position varchar(128),
+    expert_intro varchar(128),
+    expert_circle_number int(11)
+);
+
+create table `expert_illness` (
+    expert_id int(11),
+    illness_id int(11),
+    foreign key( expert_id) references expert(expert_id),
+    foreign key( illness_id) references illness(illness_id)
+);
+
+create table `expert_circle` (
+    expert_id int(11),
+    circle_id int(11),
+    foreign key(expert_id) references expert(expert_id),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+create table `illness_user` (
+    illness_id int(11),
+    patient_id int(11),
+    foreign key(illness_id) references illness(illness_id),
+    foreign key(patient_id) references patient(patient_id)
+);
