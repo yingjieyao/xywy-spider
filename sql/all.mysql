@@ -1,0 +1,520 @@
+# create database circle;
+use xunyiwenyao;
+drop table if exists `expert_circle`;
+drop table if exists `illness_user`;
+drop table if exists `expert_illness`;
+drop table if exists `reply`;
+drop table if exists `illness`;
+drop table if exists `expert`;
+drop table if exists `topic`;
+drop table if exists `patient`;
+drop table if exists `circle`;
+drop table if exists `partition`;
+
+create table `circle` (
+    circle_id int(11) primary key auto_increment,
+    circle_name varchar(128),
+    circle_circle_intro varchar(128),
+    circle_suffer_number int(11),
+    circle_expert_number int(11),
+    circle_topic_number int(11),
+    circle_owner_id int(11)
+);
+
+
+create table `partition` (
+    partition_id int(11) primary key auto_increment,
+    partition_name varchar(128)
+);
+
+
+create table `topic` (
+    topic_id int(11) primary key,
+    partition_id int(11),
+    circle_id int(11),
+    topic_title varchar(128),
+    topic_date date,
+    topic_views int(22),
+    topic_reply_number int(11),
+    topic_content varchar(500),
+    topic_owner_id int(11),
+    foreign key(partition_id) references `partition`(partition_id),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+
+create table `patient` (
+    patient_id int(11) primary key,
+    patient_usernmae varchar(128),
+    patient_level real,
+    patient_iden varchar(128),
+    patient_age int(11),
+    patient_other varchar(200),
+    patient_fan_number int(11)
+);
+
+
+create table `illness` (
+    illness_id int(11) primary key,
+    circle_id int(11),
+    illness_name varchar(128),
+    illness_patient_number int(11),
+    illness_doctor_number int(11),
+    illness_topic_number int(11),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+create table `reply` (
+    reply_id int(11) primary key auto_increment,
+    topic_id int(11),
+    patient_id int(11),
+    reply_content varchar(200),
+    reply_time date,
+    reply_follow_patient_id int(11),
+    reply_follow_content varchar(200),
+    reply_follow_date date,
+    foreign key(topic_id) references topic(topic_id),
+    foreign key(patient_id) references `patient`(patient_id)
+);
+
+
+create table `expert` (
+    expert_id int(11) primary key,
+    expert_star_number int(11),
+    expert_follow_number int(11),
+    expert_position varchar(128),
+    expert_intro varchar(128),
+    expert_circle_number int(11)
+);
+
+create table `expert_illness` (
+    expert_id int(11),
+    illness_id int(11),
+    foreign key( expert_id) references expert(expert_id),
+    foreign key( illness_id) references illness(illness_id)
+);
+
+create table `expert_circle` (
+    expert_id int(11),
+    circle_id int(11),
+    foreign key(expert_id) references expert(expert_id),
+    foreign key(circle_id) references circle(circle_id)
+);
+
+create table `illness_user` (
+    illness_id int(11),
+    patient_id int(11),
+    foreign key(illness_id) references illness(illness_id),
+    foreign key(patient_id) references patient(patient_id)
+);
+
+
+drop table if exists family_doctor_sell;
+drop table if exists evaluate;
+drop table if exists family_doctor;
+drop table if exists department;
+
+create table department (
+	department_id int primary key auto_increment,
+	department_name varchar(128) not null
+);
+
+create table family_doctor (
+	f_doctor_id int primary key auto_increment,
+	f_doctor_name varchar(128) not null,
+	f_doctor_position varchar(128),
+	f_doctor_hospital varchar(128),
+	f_doctor_skilled varchar(128),
+	f_doctor_intro varchar(128),
+	f_doctor_honor varchar(128),
+	f_doctor_all_score int,
+	f_doctor_week int,
+	f_doctor_month int,
+	f_doctor_A int,
+	f_doctor_B int,
+	f_doctor_C int,
+	f_doctor_D int,
+	f_doctor_E int,
+	f_doctor_F int,
+	f_doctor_G int,
+	f_doctor_H int,
+	f_doctor_I int,
+	f_doctor_family_number int,
+	f_doctor_patient_number int,
+	department_id int,
+	foreign key(department_id) references department(department_id)
+);
+
+create table evaluate (
+	evaluate_id int primary key auto_increment,
+	patient_id int,
+	f_doctor_id int,
+	evaluate_date date,
+	evaluate_score int,
+	evaluate_content varchar(128),
+	foreign key(f_doctor_id) references family_doctor(f_doctor_id),
+	foreign key(patient_id) references patient(patient_id)
+);
+
+create table family_doctor_sell (
+	f_sell_id int primary key auto_increment,
+	f_doctor_id int,
+	patient_name varchar(128),
+	f_sell_type varchar (128),
+	f_sell_price int,
+	f_sell_date date,
+	foreign key(f_doctor_id) references family_doctor(f_doctor_id)
+);
+
+drop table if exists `y_topic`;
+drop table if exists `y_reply`;
+drop table if exists `y_doctor`;
+
+create table y_topic (
+    y_topic_id int primary key auto_increment,
+    y_topic_title varchar(512),
+    y_topic_reply_number int,
+    y_topic_like_number int,
+    y_topic_owner_url varchar(256),
+    y_topic_view_number int,
+    y_topic_follow_number int,
+    y_topic_type varchar(128),
+    y_topic_owner_type varchar(128),
+    y_topic_date date
+);
+
+create table y_doctor (
+    y_doctor_id int primary key auto_increment,
+    y_doctor_url varchar(256),
+    y_doctor_name varchar(128),
+    y_doctor_title varchar(128),
+    y_doctor_department varchar(128),
+    y_doctor_experience_level int,
+    y_doctor_best_reply int,
+    y_doctor_help_patients int,
+    y_doctor_reputation int,
+    y_doctor_thanks int,
+    y_doctor_fan_number int,
+    y_doctor_excel varchar(1024),
+    y_doctor_hospital varchar(128),
+    y_doctor_intro varchar(2048)
+);
+
+create table y_reply (
+    y_reply_id int primary key auto_increment,
+    y_topic_id int,
+    y_doctor_id int,
+    y_reply_content varchar(32767),
+    y_reply_like_number int,
+    y_reply_date date,
+    y_reply_follow_content varchar(32767),
+    y_reply_follow_doctor_id int,
+    y_reply_follow_date date,
+    foreign key(y_topic_id) references `y_topic`(y_topic_id),
+    foreign key(y_doctor_id) references `y_doctor`(y_doctor_id)
+);
+
+drop table if exists `a_reply`;
+drop table if exists `a_topic`;
+drop table if exists `a_doctor`;
+
+create table a_topic (
+    a_topic_id int primary key auto_increment,
+    department_id_1 int,
+    department_id_2 int,
+    a_topic_owner_id int,
+    a_topic_owner_sex varchar(10),
+    a_topic_owner_age int,
+    a_topic_date date,
+    a_topic_content varchar(32767),
+    a_topic_reply_number int,
+    foreign key(department_id_1) references `department`(department_id),
+    foreign key(department_id_2) references `department`(department_id)
+
+);
+create table a_doctor(
+    a_doctor_id int primary key auto_increment,
+    a_doctor_url varchar(255),
+    a_doctor_type varchar(128),
+    a_doctor_follow_number int,
+    a_doctor_news_number int,
+    a_doctor_fan_number_1 int,
+    a_doctor_fan_number_2 int
+);
+create table a_reply(
+    a_reply_id int primary key auto_increment,
+    a_topic_id int,
+    a_reply_date date,
+    a_reply_owner_id int,
+    a_reply_content varchar(32767),
+    a_reply_help_number int,
+    a_reply_adopt int,
+    a_reply_follow_content varchar(32767),
+    a_reply_follow_owner_id int,
+    a_reply_follow_date date,
+    foreign key(a_topic_id) references `a_topic`(a_topic_id),
+    foreign key(a_reply_owner_id) references `a_doctor`(a_doctor_id)
+);
+
+drop table if exists m_illness;
+drop table if exists medicine_illness;
+drop table if exists m_evaluate;
+drop table if exists m_consult;
+drop table if exists medicine;
+
+create table medicine (
+	medicine_id int primary key auto_increment,
+	medicine_name varchar(128) not null,
+	medicine_license_number varchar(128),
+	medicine_madeby varchar(128),
+	medicine_attending varchar(128),
+	medicine_usage varchar(128),
+	medicine_related_illness varchar(128),
+	medicine_general_name varchar(128),
+	medicine_adr varchar(128),
+	medicine_avoid varchar(128),
+	medicine_notice varchar(128),
+	medicine_component varchar(128),
+	medicine_interactions varchar(128),
+	medicine_consult_number int,
+	medicine_evaluate_number int,
+	medicine_prescribed int,
+	medicine_chinese int,
+	medicine_insurance int,
+	medicine_made_in_china int
+);
+
+create table m_illness (
+	m_illness_id int primary key auto_increment,
+	m_illness_name varchar(128) not null,
+	m_illness_number int
+);
+
+create table medicine_illness (
+	m_illness_id int,
+    medicine_id int,
+	foreign key(medicine_id) references medicine(medicine_id),
+	foreign key(m_illness_id) references m_illness(m_illness_id)
+);
+
+create table m_evaluate (
+	m_evaluate_id int primary key auto_increment,
+	medicine_id int,
+	m_evaluate_level int,
+	m_evaluate_content varchar(128),
+	m_evaluate_illness varchar(128),
+	m_evaluate_location varchar(128),
+	m_evaluate_date date,
+	topic_id int,
+	foreign key(medicine_id) references medicine(medicine_id),
+	foreign key(topic_id) references a_topic(a_topic_id)
+
+);
+
+create table m_consult (
+	m_consult_id int primary key auto_increment,
+	medicine_id int,
+	m_consult_name varchar(128),
+	m_consult_content varchar(128),
+	m_consult_reply_content varchar(128),
+	m_consult_reply_name varchar(128),
+	m_consult_reply_title varchar(128),
+	topic_id int,
+	foreign key(topic_id) references a_topic(a_topic_id),
+	foreign key(medicine_id) references medicine(medicine_id)
+);
+
+
+
+
+
+drop table if exists e_article_tag;
+
+drop table if exists e_vote;
+drop table if exists e_consult;
+drop table if exists e_reply;
+drop table if exists e_article;
+drop table if exists e_tag;
+drop table if exists e_appointment;
+drop table if exists e_order;
+drop table if exists e_phone_consult_order;
+drop table if exists e_experience;
+
+
+drop table if exists e_expert;
+drop table if exists e_illness_doctor;
+
+drop table if exists e_department;
+drop table if exists e_illness;
+drop table if exists hospital;
+
+create table hospital (
+	hospital_id int primary key auto_increment,
+	hospital_name varchar(128) not null,
+	hospital_intro varchar(128),
+	hospital_address varchar(128),
+	hospital_phone varchar(128),
+	hospital_image_online_number int,
+	hospital_register_number int,
+	hospital_appointment int,
+	hospital_department_number int,
+	hospital_expert_number int
+);
+
+create table e_department (
+	e_department_id int primary key auto_increment,
+	hospital_id int,
+	e_department_key int,
+	e_edepartment_doc_number int,
+	e_department_image varchar(128),
+	e_department_register_number int,
+	e_department_appointment_number int,
+	e_department_phone_consult_number int,
+	e_department_phone_consult_success_number int,
+	foreign key(hospital_id) references hospital(hospital_id)
+);
+
+create table e_illness (
+	e_illness_id int primary key auto_increment,
+	e_illness_name varchar(128) not null
+);
+
+create table e_illness_doctor (
+	e_illness_id int,
+	e_department_id int,
+	e_hospital_id int,
+	e_illness_doctor_number int,
+	foreign key(e_department_id) references e_department(e_department_id),
+	foreign key(e_hospital_id) references hospital(hospital_id)
+);
+
+create table e_expert (
+	e_expert_id int primary key auto_increment,
+	e_expert_name varchar(128) not null,
+	e_expert_title varchar(128),
+	e_expert_hospital varchar(128),
+	e_expert_department varchar(128),
+	e_expert_excel varchar(128),
+	e_expert_experience varchar(128),
+	e_expert_curative_level real,
+	e_expert_attitude_level real,
+	e_expert_url varchar(128),
+	e_expert_consult_scope varchar(128),
+	e_expert_appointment int,
+	e_expert_visits int,
+	e_expert_article_number int,
+	e_expert_consult_number int,
+	e_expert_praise int,
+	e_expert_exp varchar(128),
+	e_expert_last_online_time date,
+	e_expert_join_time date,
+	e_expert_reply_number int,
+	e_expert_appointment_success_number int,
+	e_expert_vote_number int,
+	e_expert_phone_consult_details varchar(128),
+	e_expert_phone_consult_help int,
+	e_expert_image_consult varchar(128),
+	e_expert_image_consult_help int,
+	e_expert_add_appointment varchar(128),
+	e_expert_add_appoinment_number int,
+	e_expert_time varchar(128),
+	e_expert_phone_consult_price real
+);
+
+create table e_vote (
+	e_vote_id int primary key auto_increment,
+	e_expert_id int,
+	e_vote_illness_name varchar(128),
+	e_vote_number int,
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table e_consult (
+	e_consult_id int primary key auto_increment,
+	e_consult_owner_id int,
+	e_expert_id int,
+	e_consult_illness varchar(128),
+	e_consult_illness_detail varchar(128),
+	e_consult_previous varchar(128),
+	e_consult_want_help varchar(128),
+	e_consult_date date,
+	e_consult_analysis varchar(128),
+	e_consult_suggest varchar(128),
+	e_consult_reply_date date,
+	e_consult_like_number int,
+	e_consult_dislike_number int,
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table e_reply (
+	e_reply_id int primary key auto_increment,
+	e_consult_id int,
+	e_reply_content varchar(128),
+	e_reply_date date,
+	e_reply_owner_id int,
+	foreign key(e_reply_owner_id) references e_expert(e_expert_id),
+	foreign key(e_consult_id) references e_consult(e_consult_id)
+);
+
+create table e_article (
+	e_article_id int primary key auto_increment,
+	e_expert_id int,
+	e_article_date date,
+	e_article_content varchar(128),
+	e_article_read int,
+	e_article_like int,
+	e_article_dislike int,
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table e_tag (
+	e_tag_id int primary key auto_increment,
+	e_tag_name varchar(128)
+);
+
+create table e_article_tag (
+	e_article_id int,
+	e_tag_id int,
+	foreign key(e_article_id) references e_article(e_article_id),
+	foreign key(e_tag_id) references e_tag(e_tag_id)
+);
+
+create table e_appointment (
+	e_expert_id int,
+	e_appointment_range varchar(128),
+	e_appointment_region varchar(128),
+	e_appointment_require varchar(128),
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table e_order (
+	e_order_id int primary key auto_increment,
+	e_order_location varchar(128),
+	e_expert_id int,
+	e_order_illness varchar(128),
+	e_order_time date,
+	e_order_type varchar(128),
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table  e_phone_consult_order (
+	e_phone_consult_order_id int primary key auto_increment,
+	e_expert_id int,
+	e_phone_consult_order_patient_id int,
+	e_phone_consult_order_details varchar(128),
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
+
+create table e_experience (
+	e_experience_id int primary key auto_increment,
+	e_expert_id int,
+	e_experience_patient_id int,
+	e_experience_region varchar(128),
+	e_experience_illness varchar(128),
+	e_experience_effect varchar(128),
+	e_experience_attitude varchar(128),
+	e_experience_date date,
+	e_experience_content varchar(128),
+	e_experience_like_number int,
+	foreign key(e_expert_id) references e_expert(e_expert_id)
+);
