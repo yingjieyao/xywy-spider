@@ -19,7 +19,7 @@ create table `circle` (
     circle_expert_number int(11),
     circle_topic_number int(11),
     circle_owner_id int(11)
-);
+) character set utf8;
 
 
 create table `partition` (
