@@ -1,12 +1,16 @@
 import re
-from scrapy.spider import Spider
+from scrapy.spiders import Spider
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.selector import Selector
+from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 from xywy.items import CircleItem
 
 class CircleSpider(Spider):
     name = 'Circle'
     allowed_domains = ["home.xywy.com"]
+    # rules = [Rule(LinkExtractor(allow=['/([a-z]+)/$']), callback='parse_item', follow=False)]
+
     custom_settings = {
         'ITEM_PIPELINES' : {
             'xywy.pipelines.CirclePipeline': 300

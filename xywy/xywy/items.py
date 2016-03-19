@@ -21,3 +21,7 @@ class CircleItem(scrapy.Item):
     circle_expert_number = scrapy.Field()
     circle_topic_number = scrapy.Field()
     circle_owner_id = scrapy.Field()
+
+class HospitalItem(scrapy.Item):
+    hospital_name = scrapy.Field()
+
