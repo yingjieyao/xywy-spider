@@ -7,12 +7,6 @@
 
 import scrapy
 
-
-class XywyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
-
 class CircleItem(scrapy.Item):
     url = scrapy.Field()
     circle_name = scrapy.Field()
@@ -24,4 +18,15 @@ class CircleItem(scrapy.Item):
 
 class HospitalItem(scrapy.Item):
     hospital_name = scrapy.Field()
+    hospital_intro = scrapy.Field()
+    hospital_address = scrapy.Field()
+    hospital_phone = scrapy.Field()
+    hospital_image_online_number = scrapy.Field()
+    hospital_register_number = scrapy.Field()
+    hospital_appointment = scrapy.Field()
+    hospital_department_number = scrapy.Field()
+    hospital_expert_number = scrapy.Field()
+    hospital_score = scrapy.Field()
+    hospital_number_experience = scrapy.Field()
+
 

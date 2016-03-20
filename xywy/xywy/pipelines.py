@@ -10,7 +10,6 @@ import codecs
 
 from twisted.enterprise import adbapi
 
-import MySQLdb
 import MySQLdb.cursors
 
 class CirclePipeline(object):
@@ -60,3 +59,18 @@ class CirclePipeline(object):
 #                     circle_topic_number, circle_owner_id) values(%s, %s, %s, %s, %s, %s)""",
 #                     (item["circle_name"], item["circle_circle_intro"], item["circle_suffer_number"], item["circle_expert_number"],
 #                     item["circle_topic_number"], item["circle_owner_id"]))
+
+class HospitalPipeline(object):
+    def __init__(self):
+        self.file = codecs.open('tmp.json', 'w', 'utf-8')
+
+    def process_item(self, item, spider):
+        # print item['hospital_intro']
+        line = json.dumps(dict(item)) + "\n"
+        self.file.write(line)
+        return item
+
+    def spider_closed(self, spider):
+        self.file.close()
+
+

@@ -358,7 +358,9 @@ create table hospital (
 	hospital_register_number int,
 	hospital_appointment int,
 	hospital_department_number int,
-	hospital_expert_number int
+	hospital_expert_number int,
+    hospital_score real,
+    hospital_number_experience int
 );
 
 create table e_department (
