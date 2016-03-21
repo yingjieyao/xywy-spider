@@ -6,6 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy import Field, Item
 
 class CircleItem(scrapy.Item):
     url = scrapy.Field()
@@ -29,4 +30,63 @@ class HospitalItem(scrapy.Item):
     hospital_score = scrapy.Field()
     hospital_number_experience = scrapy.Field()
 
+class DepartmentItem(Item):
+    hospital_name = Field()
+    url = Field()
+    e_department_key = Field()
+    e_department_doc_number = Field()
+    e_department_image = Field()
+    e_department_register_number = Field()
+    e_department_appointment_number = Field()
+    e_department_phone_consult_number = Field()
+    e_department_phone_consult_success_number = Field()
+    illness = Field() ##list
+    illness_number = Field()
 
+class ExpertItem(Item):
+    e_expert_name = Field()
+    e_expert_title = Field()
+    e_expert_hospital = Field()
+    e_expert_department = Field()
+    e_expert_excel = Field()
+    e_expert_experience = Field()
+    e_expert_curative_level = Field()
+    e_expert_attitude_level = Field()
+    e_expert_url = Field()
+    e_expert_consult_scope = Field()
+    e_expert_appointment = Field()
+    e_expert_visits = Field()
+    e_expert_article_number= Field()
+    e_expert_consult_number = Field()
+    e_expert_praise = Field()
+    e_expert_exp = Field()
+    e_expert_last_online_time = Field() ##
+    e_expert_join_time = Field() ##
+    e_expert_reply_number = Field()
+    e_expert_appointment_success_number = Field()
+    e_expert_vote_number = Field()
+    e_expert_phone_consult_details = Field()
+    e_expert_phone_consult_help = Field()
+    e_expert_image_consult = Field()
+    e_expert_image_consult_help = Field()
+    e_expert_add_appointment = Field()
+    e_expert_add_appointment_number = Field()
+    e_expert_time = Field()
+    e_expert_phone_orders = Field()
+    e_expert_phone_consult_price = Field()
+    e_expert_thank = Field() # list
+
+class PhoneConsultItem(Item):
+    e_phone_consult_order_patient_id = Field()
+    e_phone_consult_order_details = Field()
+    e_phone_consult_order_ill = Field()
+
+class ExperienceItem(Item):
+    e_experience_patient_id = Field()
+    e_experience_region = Field()
+    e_experience_illness = Field()
+    e_experience_effect = Field()
+    e_experience_attitude = Field()
+    e_experience_date = Field()
+    e_experience_content = Field()
+    e_experience_like_number = Field()

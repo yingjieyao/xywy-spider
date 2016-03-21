@@ -34,7 +34,7 @@ class HospitalSpider(Spider):
     def get_info(self, response):
         item = HospitalItem()
         sel = Selector(response)
-        item['hospital_name'] = sel.xpath('//div[@class="z-head-name"]/strong/text()').extract()[0].encode('utf-8')
+        item['hospital_name'] = sel.xpath('//div[@class="z-head-name"]/strong/text()').extract()[0]
 
         t_add = sel.xpath('//div[@class="z-hospital-address fr"]/div/div[@class="clearfix lh30"][1]//p/text()').extract()
         if len(t_add) == 2:
