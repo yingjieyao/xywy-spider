@@ -351,7 +351,7 @@ drop table if exists hospital;
 create table hospital (
 	hospital_id int primary key auto_increment,
 	hospital_name varchar(128) not null,
-	hospital_intro varchar(128),
+	hospital_intro text,
 	hospital_address varchar(128),
 	hospital_phone varchar(128),
 	hospital_image_online_number int,
@@ -365,9 +365,11 @@ create table hospital (
 
 create table e_department (
 	e_department_id int primary key auto_increment,
+    e_department_name varchar(128),
+    e_department_url varchar(256),
 	hospital_id int,
 	e_department_key int,
-	e_edepartment_doc_number int,
+	e_department_doc_number int,
 	e_department_image varchar(128),
 	e_department_register_number int,
 	e_department_appointment_number int,
@@ -396,12 +398,13 @@ create table e_expert (
 	e_expert_title varchar(128),
 	e_expert_hospital varchar(128),
 	e_expert_department varchar(128),
-	e_expert_excel varchar(128),
-	e_expert_experience varchar(128),
+	e_expert_excel text,
+	e_expert_experience text,
 	e_expert_curative_level real,
 	e_expert_attitude_level real,
+	e_expert_home_url varchar(128),
 	e_expert_url varchar(128),
-	e_expert_consult_scope varchar(128),
+	e_expert_consult_scope text,
 	e_expert_appointment int,
 	e_expert_visits int,
 	e_expert_article_number int,
@@ -413,14 +416,14 @@ create table e_expert (
 	e_expert_reply_number int,
 	e_expert_appointment_success_number int,
 	e_expert_vote_number int,
-	e_expert_phone_consult_details varchar(128),
+	e_expert_phone_consult_details text,
 	e_expert_phone_consult_help int,
 	e_expert_image_consult varchar(128),
 	e_expert_image_consult_help int,
 	e_expert_add_appointment varchar(128),
 	e_expert_add_appoinment_number int,
 	e_expert_time varchar(128),
-	e_expert_phone_consult_price real
+	e_expert_phone_consult_price text
 );
 
 create table e_vote (
@@ -510,13 +513,13 @@ create table  e_phone_consult_order (
 create table e_experience (
 	e_experience_id int primary key auto_increment,
 	e_expert_id int,
-	e_experience_patient_id int,
+	e_experience_patient_id varchar(128),
 	e_experience_region varchar(128),
 	e_experience_illness varchar(128),
 	e_experience_effect varchar(128),
 	e_experience_attitude varchar(128),
 	e_experience_date date,
 	e_experience_content varchar(128),
-	e_experience_like_number int,
+	e_experience_like_number varchar(128),
 	foreign key(e_expert_id) references e_expert(e_expert_id)
 );

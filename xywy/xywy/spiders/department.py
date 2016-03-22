@@ -45,6 +45,7 @@ class DepartmentSpider(Spider):
         ## zhongdiankeshi
         urls = all_url.xpath('//div[@class="z-h-k-name-import pb10 pt10 clearfix pr minus1"]//li')
         for url1 in urls:
+            item['e_department_name'] = url1.xpath('a/text()').extract()[0]
             item['e_department_key'] = 1
             doc_number = url1.xpath('span/a/text()').extract()
             if doc_number:
@@ -58,6 +59,7 @@ class DepartmentSpider(Spider):
 
         urls = all_url.xpath('//div[@class="z-h-k-name pb10 pt10 bdr-dashed clearfix"]//li')
         for url1 in urls:
+            item['e_department_name'] = url1.xpath('a/text()').extract()[0]
             item['e_department_key'] = 0
             doc_number = url1.xpath('span/a/text()').extract()
             if doc_number:
@@ -97,7 +99,6 @@ class DepartmentSpider(Spider):
         yield Request(url=expert_url, callback=self.get_illness_number, meta={'item': item})
         print expert_url
 
-
     def get_illness_number(self, response):
         sel = Selector(response)
         item = response.meta['item']
@@ -108,7 +109,7 @@ class DepartmentSpider(Spider):
             illness = ill.xpath('a/span[1]/text()').extract()[0]
             illness_number = ill.xpath('a/span[2]/text()').extract()[0]
             illnesses.append(illness)
-            illnesses_number.append(illness_number)
+            illnesses_number.append(illness_number[1:-3])
         item['illness'] = illnesses
         item['illness_number'] = illnesses_number
         return item

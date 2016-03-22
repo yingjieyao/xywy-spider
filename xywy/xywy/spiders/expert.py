@@ -69,6 +69,23 @@ class ExpertSpider(Spider):
         item = ExpertItem()
         info = sel.xpath('//div[@class="clearfix"]')
 
+        item['e_expert_thank'] = []
+        item['e_expert_phone_orders'] = []
+        item['e_expert_consult_scope'] = ''
+        item['e_expert_appointment'] = 0
+        item['e_expert_visits'] = 0
+        item['e_expert_article_number'] = 0
+        item['e_expert_consult_number'] = 0
+        item['e_expert_praise'] = 0
+        item['e_expert_exp'] = ''
+        item['e_expert_reply_number'] = 0
+        item['e_expert_phone_consult_details'] = ''
+        item['e_expert_phone_consult_help'] = 0
+        item['e_expert_phone_consult_price'] = ''
+        item['e_expert_image_consult'] = ''
+        item['e_expert_image_consult_help'] = 0
+        item['e_expert_add_appointment'] = ''
+        item['e_expert_add_appointment_number'] = 0
         item['e_expert_name'] = sel.xpath('//div[@class="z-head-name"]/strong//text()').extract()[0]
 
         titles = sel.xpath('//div[@class="z-head-name"]/span/text()').extract()
@@ -106,6 +123,7 @@ class ExpertSpider(Spider):
 
         # next url
         next_url = sel.xpath('//div[@class="mt20 cca clearfix"]/span/a/@href').extract()
+        item['e_expert_home_url'] = response.url
         item['e_expert_url'] = ''
         if next_url:
             item['e_expert_url'] = next_url[0]
@@ -139,7 +157,7 @@ class ExpertSpider(Spider):
         item['e_expert_image_consult'] = im
         image_number = sel.xpath('//div[@class="doctor-contact-tuw clearfix"]/div//span[@class="f16"]/text()').extract()
         if image_number:
-            item['e_expert_image_consult_help'] = image_number
+            item['e_expert_image_consult_help'] = image_number[0]
         else:
             item['e_expert_image_consult_help'] = 0
 
@@ -159,7 +177,6 @@ class ExpertSpider(Spider):
         sel = Selector(response)
         all_thank = sel.xpath('//div[@class="brdc8"]')
         thanks = []
-        print response.url
         for thank in all_thank:
             experience = ExperienceItem()
             title = thank.xpath('//div/span[1]/text()').extract()[0]
@@ -168,12 +185,18 @@ class ExpertSpider(Spider):
             experience['e_experience_region'] = title[1][2:-3]
             ill = thank.xpath('//div/span[2]/text()').extract()[0]
             experience['e_experience_illness'] = ill[3:]
+            experience['e_experience_effect'] = '5'
+            experience['e_experience_attitude'] = '5'
             experience['e_experience_date'] = thank.xpath('//div/span[3]/text()').extract()[0]
-            experience['e_experience_content'] = thank.xpath('//div[@class="thank_info pt10 pb10 f12 deepgray-a clearfix pl15 pr15"]//text()').extract()[0]
+            content = thank.xpath('//div[@class="thank_info pt10 pb10 f12 deepgray-a clearfix pl15 pr15"]//text()').extract()
+            cont = ''
+            for co in content:
+                cont = cont + co
+            experience['e_experience_content'] = cont
             experience['e_experience_like_number'] = thank.xpath('//div[@class="brdc8"]//em/text()').extract()[0]
             thanks.append(experience)
 
-        # item['e_expert_thank'] = thanks
+        item['e_expert_thank'] = thanks
         return item
 
     def phone_consult(self, response):
