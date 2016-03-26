@@ -1,5 +1,5 @@
 # create database circle;
-use xunyiwenyao_test;
+use xunyiwenyao;
 drop table if exists `expert_circle`;
 drop table if exists `illness_user`;
 drop table if exists `expert_illness`;
@@ -111,7 +111,6 @@ create table `illness_user` (
 
 drop table if exists family_doctor_sell;
 drop table if exists evaluate;
-drop table if exists family_doctor_update;
 drop table if exists family_doctor;
 drop table if exists department;
 
@@ -119,6 +118,7 @@ create table department (
 	department_id int primary key auto_increment,
 	department_name varchar(128) not null
 );
+
 create table family_doctor (
 	f_doctor_id int primary key auto_increment,
 	f_doctor_name varchar(128) not null,
@@ -144,26 +144,6 @@ create table family_doctor (
 	department_id int,
 	foreign key(department_id) references department(department_id)
 );
-
-create table family_doctor_update (
-	f_doctor_id int not null,
-	f_doctor_honor varchar(128),
-	f_doctor_all_score int,
-	f_doctor_A int,
-	f_doctor_B int,
-	f_doctor_C int,
-	f_doctor_D int,
-	f_doctor_E int,
-	f_doctor_F int,
-	f_doctor_G int,
-	f_doctor_H int,
-	f_doctor_I int,
-	f_doctor_family_number int,
-	f_doctor_patient_number int,
-    f_doctor_update_time datetime primary key,
-	foreign key(f_doctor_id) references family_doctor(f_doctor_id)
-);
-
 
 create table evaluate (
 	evaluate_id int primary key auto_increment,

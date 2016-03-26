@@ -12,13 +12,15 @@ from twisted.enterprise import adbapi
 
 import MySQLdb.cursors
 
-class ExpertPipeline(object):
+class ExpertPipeline2(object):
     def __init__(self):
-        self.file = codecs.open('tmp.json', 'w', encoding='utf-8')
+        self.file = codecs.open('d_article_url.json', 'w', encoding='utf-8')
 
     def process_item(self, item, spider):
-        line = json.dumps(dict(item)) + "\n"
-        self.file.write(line)
+        if item['e_expert_url'] != "":
+            print 'here'
+            # line = json.dumps(item['e_expert_url']) + "\n"
+            self.file.write(item['e_expert_url'] + '\n')
         return item
 
     def spider_closed(self, spider):

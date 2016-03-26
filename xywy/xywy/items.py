@@ -92,3 +92,17 @@ class ExperienceItem(Item):
     e_experience_content = Field()
     e_experience_effect = Field()
     e_experience_like_number = Field()
+
+class ArticleItem(Item):
+    home_url = Field()
+    article_url = Field()
+    e_expert_id = Field()
+    author = Field()
+    title = Field()
+    date = Field()
+    content = Field()
+    read = Field()
+    like = Field()
+    dislike = Field()
+    tag = Field() # list
+
