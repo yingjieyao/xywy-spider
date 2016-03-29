@@ -10,11 +10,11 @@ class ArticleSpider(Spider):
     name = 'Article'
     allowed_domains = ["z.xywy.com"]
 
-    # custom_settings = {
-    #     'ITEM_PIPELINES' : {
-    #         'xywy.pipelines.CirclePipeline': 300
-    #     }
-    # }
+    custom_settings = {
+        'ITEM_PIPELINES' : {
+            'xywy.pipelines.ArticlePipeline': 300
+        }
+    }
 
 
     def __init__(self):
@@ -23,26 +23,41 @@ class ArticleSpider(Spider):
         self.start_urls = []
         for url in urls:
             if len(url) > 15:
-                self.start_urls.append(url[:-2] + '/wenzhang.htm')
+                print url[:-1]
+                self.start_urls.append(url[:-1] + '/wenzhang.htm')
 
         article_url.close()
 
 
     def parse(self, response):
-        item = ArticleItem()
-        item['home_url'] = response.url
+        # item['home_url'] = response.url[:-13]
         sel = Selector(response)
         num_article = sel.xpath('//span[@class="yisheng6"]/text()').extract()
-        # print num_article, len(num_article)
+        home_url = response.url.split("?")[0]
         if len(num_article) != 0:
-            numbers = num_article[0]
             urls = sel.xpath('//span[@class="artit_view lightblue-a"]/a[1]/@href').extract()
+            numbers = len(urls)
             for url in urls:
-                yield Request(url=url, meta={'item': item}, callback=self.get_article)
+                yield Request(url=url, meta={'from_url': home_url[:-13]}, callback=self.get_article)
+
+            if numbers == 20:
+                next_digit = 2
+                mode = re.compile(r'\d+$')
+                digits = mode.findall(response.url)
+                for d in digits:
+                    if response.url.endswith(d):
+                        next_digit = int(d) + 1
+                        break
+                username = home_url[22:-13]
+                yield Request(url=home_url + '?doctoruser=' +  username + '&page=' + str(next_digit), callback=self.parse)
+
+        # print response.url[22:-13]
 
     def get_article(self, response):
-        print response.url
-        item = response.meta['item']
+        # print response.url
+        item = ArticleItem()
+        item['home_url'] = response.meta['from_url']
+        # item = response.meta['item']
         sel = Selector(response)
 
         tags = sel.xpath('//p[@style="float:left;padding-right:15px;"]/span/a/text()').extract()
@@ -66,11 +81,11 @@ class ArticleSpider(Spider):
             con = con + cont
         item['content'] = con
         read = sel.xpath('//span[@class="db fl"]/text()').extract()[0]
-        item['read'] = read
+        item['read'] = read[3:-3]
 
-        like = sel.xpath('//span[@class="num db fl"]').extract()[0]
-        dislike = sel.xpath('//span[@class="num db fl mr10"]').extract()[0]
-        item['like'] = like
-        item['dislike'] = dislike
+        like = sel.xpath('//span[@class="num db fl"]/text()').extract()[0]
+        dislike = sel.xpath('//span[@class="num db fl mr10"]/text()').extract()[0]
+        item['like'] = like[1:-1]
+        item['dislike'] = dislike[1:-1]
         return item
 

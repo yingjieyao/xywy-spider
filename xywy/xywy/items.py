@@ -106,3 +106,16 @@ class ArticleItem(Item):
     dislike = Field()
     tag = Field() # list
 
+class VoteItem(Item):
+    e_expert_url = Field()
+    e_vote_illness_name = Field()
+    e_vote_number = Field()
+
+class EorderItem(Item):
+    order_id = Field()
+    expert_url = Field()
+    location = Field()
+    illness = Field()
+    time = Field()
+    order_type = Field()
+

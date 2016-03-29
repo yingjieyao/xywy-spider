@@ -12,7 +12,7 @@ class ExpertSpider(Spider):
 
     custom_settings = {
         'ITEM_PIPELINES' : {
-            # 'xywy.pipelines.ExpertPipeline': 300
+            'xywy.pipelines.ExpertPipeline': 300,
             'xywy.pipelines.ExpertPipeline2': 400
         }
     }
@@ -79,6 +79,7 @@ class ExpertSpider(Spider):
         item['e_expert_consult_number'] = 0
         item['e_expert_praise'] = 0
         item['e_expert_exp'] = ''
+        item['e_expert_url'] = ''
         item['e_expert_reply_number'] = 0
         item['e_expert_phone_consult_details'] = ''
         item['e_expert_phone_consult_help'] = 0

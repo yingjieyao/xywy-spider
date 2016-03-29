@@ -484,7 +484,7 @@ create table e_reply (
 create table e_article (
 	e_article_id int primary key auto_increment,
 	e_expert_id int,
-	e_article_date date,
+	e_article_date datetime,
 	e_article_title varchar(300),
 	e_article_content text,
 	e_article_read int,
@@ -514,11 +514,11 @@ create table e_appointment (
 );
 
 create table e_order (
-	e_order_id int primary key auto_increment,
+	e_order_id int primary key,
 	e_order_location varchar(128),
 	e_expert_id int,
 	e_order_illness varchar(128),
-	e_order_time date,
+	e_order_time varchar(128),
 	e_order_type varchar(128),
 	foreign key(e_expert_id) references e_expert(e_expert_id)
 );
