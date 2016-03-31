@@ -12,7 +12,7 @@ class ExpertSpider(Spider):
 
     custom_settings = {
         'ITEM_PIPELINES' : {
-            'xywy.pipelines.ExpertPipeline': 300,
+#             'xywy.pipelines.ExpertPipeline': 300,
             'xywy.pipelines.ExpertPipeline2': 400
         }
     }
@@ -211,6 +211,7 @@ class ExpertSpider(Spider):
         item['e_expert_phone_consult_price'] = alls
         all_con = sel.xpath('//ul[@class="tab z-slide-tab fYaHei fb"]/li[2]//@href').extract()
         if len(all_con):
+            all_con[0] = 'http://z.xywy.com/dhysxq_1640_2_1.htm'
             yield Request(url=all_con[0], meta={'item': item}, callback=self.get_all_phone_consult)
         else:
             yield item
@@ -223,22 +224,24 @@ class ExpertSpider(Spider):
         # if len(all_order) == 1:
         #     return item
         # all_order = all_order[1:]
-        # print all_order
         for order in all_order:
+            print order
             the = PhoneConsultItem()
-            patient_id = order.xpath('//div/span[@class="fl mr20 z-appraise-per"]/text()').extract()
+            patient_id = order.xpath('/div/span[1]/text()').extract()
+            print len(patient_id)
             if patient_id:
                 the['e_phone_consult_order_patient_id'] = patient_id[0]
             else:
                 break
 
-            the['e_phone_consult_order_ill'] = order.xpath('//div/span[@class="fl mr20 ml20 z-appraise-ill"]/text()').extract()[0]
+            the['e_phone_consult_order_ill'] = order.xpath('/div/span[2]/text()').extract()[0]
             detail = order.xpath('//p[@class="mt5 none z-detail-long"]/text()').extract()
             if detail:
                 the['e_phone_consult_order_details'] = detail[0]
             else:
                 break
             orders.append(the)
+            print the
             # print response.url + the['e_phone_consult_order_details']
 
         item['e_expert_phone_orders'] = orders

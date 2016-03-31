@@ -18,14 +18,60 @@ class ExpertPipeline2(object):
         self.file2 = codecs.open('d_vote_url.json', 'w', encoding='utf-8')
 
     def process_item(self, item, spider):
-        if item['e_expert_url'] != "":
-            # line = json.dumps(item['e_expert_url']) + "\n"
-            self.file1.write(item['e_expert_url'] + '\n')
-            self.file2.write(item['e_expert_home_url'] + '\n')
+        # print '2', len(item['e_expert_phone_orders']), item['e_expert_home_url']
+        # for order in item['e_expert_phone_orders']:
+        #     print order['e_phone_consult_order_patient_id'], order['e_phone_consult_order_ill'], order['e_phone_consult_order_details']
+        # if item['e_expert_url'] != "":
+        #     # line = json.dumps(item['e_expert_url']) + "\n"
+        #     self.file1.write(item['e_expert_url'] + '\n')
+        #     self.file2.write(item['e_expert_home_url'] + '\n')
         return item
 
     def spider_closed(self, spider):
         self.file.close()
+
+class EappointmentPipeline(object):
+    def __init__(self, dbpool):
+        self.dbpool = dbpool
+
+    @classmethod
+    def from_settings(cls, settings):
+        dbargs = dict(
+                host = settings['MYSQL_HOST'],
+                db = settings['MYSQL_DBNAME'],
+                user = settings['MYSQL_USER'],
+                passwd = settings['MYSQL_PASSWD'],
+                charset = 'utf8',
+                cursorclass= MySQLdb.cursors.DictCursor,
+                use_unicode = True,
+                )
+        dbpool = adbapi.ConnectionPool('MySQLdb', **dbargs)
+        return cls(dbpool)
+
+    def process_item(self, item, spider):
+        d =self.dbpool.runInteraction(self._do_upinsert, item, spider)
+        return d
+
+    def _do_upinsert(self, conn, item, spider):
+        conn.execute("SET NAMES utf8")
+        conn.execute("select e_expert_id from e_expert where e_expert_url = '%s'" % item['expert_url'])
+        ret = conn.fetchone()
+        if not ret:
+            return item
+        print item['e_expert_id']
+        # conn.execute("select * from e_order where e_order_id = '%s'" % (item['order_id']))
+        # ans = conn.fetchone()
+        # if ans:
+        #     return item
+        # conn.execute("""
+        #         insert into e_order(e_order_id, e_order_location, e_expert_id, e_order_illness,
+        #         e_order_time, e_order_type) values(%s, '%s', %s, '%s', '%s', '%s') """ %
+        #         (item['order_id'], item['location'], ret['e_expert_id'], item['illness'], item['time'], item['order_type']))
+        # # print ret['e_expert_id']
+
+        # return item
+
+
 
 class EorderPipeline(object):
     def __init__(self, dbpool):
@@ -380,20 +426,31 @@ class ExpertPipeline(object):
                     item['e_expert_exp'], item['e_expert_phone_consult_details'], item['e_expert_phone_consult_help'],
                     item['e_expert_image_consult'], item['e_expert_image_consult_help'], item['e_expert_add_appointment'],
                     item['e_expert_add_appointment_number'], item['e_expert_phone_consult_price']))
-        thanks = item['e_expert_thank']
-        if not thanks:
-            return item
-        conn.execute("select e_expert_id from e_expert where e_expert_home_url = '%s'" % item['e_expert_home_url'])
-        ret = conn.fetchone()
-        expert_id = ret['e_expert_id']
-        conn.execute('alter table e_experience CONVERT TO CHARACTER SET utf8;')
-        for thank in thanks:
+
+        # print item['e_expert_phone_orders']
+        # print len(item['e_expert_phone_orders']), item['e_expert_home_url']
+        for order in item['e_expert_phone_orders']:
+            # print order
+            p_id = order['e_phone_consult_order_patient_id']
+            ill = order['e_phone_consult_order_ill']
+            details = order['e_phone_consult_order_details']
             conn.execute("""
-                    insert into e_experience(e_expert_id, e_experience_patient_id, e_experience_region, e_experience_illness, e_experience_effect,
-                    e_experience_attitude, e_experience_date, e_experience_content, e_experience_like_number) values(%s, '%s', '%s', '%s', '%s','%s',
-                    '%s', '%s', %s)""" % (expert_id, thank['e_experience_patient_id'], thank['e_experience_region'], thank['e_experience_illness'],
-                        thank['e_experience_effect'], thank['e_experience_attitude'], thank['e_experience_date'], thank['e_experience_content'],
-                        thank['e_experience_like_number']))
+                    insert into e_phone_consult_order(e_expert_id, e_phone_consult_order_patient_id, e_phone_consult_order_ill,
+                    e_phone_consult_order_details) values(%s, '%s', '%s', '%s') """ %
+                    (expert_id, p_id, ill, details))
+
+        thanks = item['e_expert_thank']
+        if len(thanks) != 0:
+            conn.execute("select e_expert_id from e_expert where e_expert_home_url = '%s'" % item['e_expert_home_url'])
+            ret = conn.fetchone()
+            expert_id = ret['e_expert_id']
+            conn.execute('alter table e_experience CONVERT TO CHARACTER SET utf8;')
+            for thank in thanks:
+                conn.execute("""
+                        insert into e_experience(e_expert_id, e_experience_patient_id, e_experience_region, e_experience_illness, e_experience_effect,
+                        e_experience_attitude, e_experience_date, e_experience_content, e_experience_like_number) values(%s, '%s', '%s', '%s', '%s','%s',
+                        '%s', '%s', %s)""" % (expert_id, thank['e_experience_patient_id'], thank['e_experience_region'], thank['e_experience_illness'],
+                            thank['e_experience_effect'], thank['e_experience_attitude'], thank['e_experience_date'], thank['e_experience_content'],
+                            thank['e_experience_like_number']))
+
         return item
-
-

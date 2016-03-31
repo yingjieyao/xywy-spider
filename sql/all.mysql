@@ -526,8 +526,9 @@ create table e_order (
 create table  e_phone_consult_order (
 	e_phone_consult_order_id int primary key auto_increment,
 	e_expert_id int,
-	e_phone_consult_order_patient_id int,
-	e_phone_consult_order_details varchar(128),
+	e_phone_consult_order_patient_id varchar(128),
+	e_phone_consult_order_ill varchar(128),
+	e_phone_consult_order_details text,
 	foreign key(e_expert_id) references e_expert(e_expert_id)
 );
 

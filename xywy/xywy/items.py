@@ -74,7 +74,7 @@ class ExpertItem(Item):
     e_expert_add_appointment = Field()
     e_expert_add_appointment_number = Field()
     e_expert_time = Field()
-    e_expert_phone_orders = Field()
+    e_expert_phone_orders = Field() # list
     e_expert_phone_consult_price = Field()
     e_expert_thank = Field() # list
 
@@ -119,3 +119,8 @@ class EorderItem(Item):
     time = Field()
     order_type = Field()
 
+class EappointItem(Item):
+    expert_url = Field()
+    e_range = Field()
+    region = Field()
+    require = Field()
