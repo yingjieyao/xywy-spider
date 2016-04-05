@@ -124,3 +124,28 @@ class EappointItem(Item):
     e_range = Field()
     region = Field()
     require = Field()
+
+class EconsultItem(Item):
+    consult_id = Field()
+    expert_url = Field()
+    patient_id = Field()
+    illness = Field()
+    illness_detail = Field()
+    previous = Field()
+    want_help = Field()
+    date = Field()
+    analysis = Field()
+    suggest = Field()
+    reply_date = Field()
+    like_number = Field()
+    dislike_number = Field()
+    replys = Field() # list
+
+class EreplyItem(Item):
+    reply_id = Field()
+    consult_id = Field()
+    reply_content = Field()
+    reply_date = Field()
+    owner_id = Field()
+
+

@@ -308,4 +308,3 @@ class ExpertSpider(Spider):
         sel = Selector(response)
         item = reponse.meta['item']
         return item
-

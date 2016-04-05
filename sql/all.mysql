@@ -455,8 +455,8 @@ create table e_vote (
 );
 
 create table e_consult (
-	e_consult_id int primary key auto_increment,
-	e_consult_owner_id int,
+	e_consult_id int primary key,
+	e_consult_owner_id varchar(128),
 	e_expert_id int,
 	e_consult_illness varchar(128),
 	e_consult_illness_detail varchar(128),

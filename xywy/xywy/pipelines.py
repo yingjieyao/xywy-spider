@@ -11,6 +11,7 @@ import codecs
 from twisted.enterprise import adbapi
 
 import MySQLdb.cursors
+from consult_pipe import ConsultPipeline
 
 class ExpertPipeline2(object):
     def __init__(self):
@@ -18,13 +19,10 @@ class ExpertPipeline2(object):
         self.file2 = codecs.open('d_vote_url.json', 'w', encoding='utf-8')
 
     def process_item(self, item, spider):
-        # print '2', len(item['e_expert_phone_orders']), item['e_expert_home_url']
-        # for order in item['e_expert_phone_orders']:
-        #     print order['e_phone_consult_order_patient_id'], order['e_phone_consult_order_ill'], order['e_phone_consult_order_details']
-        # if item['e_expert_url'] != "":
-        #     # line = json.dumps(item['e_expert_url']) + "\n"
-        #     self.file1.write(item['e_expert_url'] + '\n')
-        #     self.file2.write(item['e_expert_home_url'] + '\n')
+        if item['e_expert_url'] != "":
+            # line = json.dumps(item['e_expert_url']) + "\n"
+            self.file1.write(item['e_expert_url'] + '\n')
+            self.file2.write(item['e_expert_home_url'] + '\n')
         return item
 
     def spider_closed(self, spider):
@@ -59,17 +57,17 @@ class EappointmentPipeline(object):
         if not ret:
             return item
         print item['e_expert_id']
-        # conn.execute("select * from e_order where e_order_id = '%s'" % (item['order_id']))
-        # ans = conn.fetchone()
-        # if ans:
-        #     return item
-        # conn.execute("""
-        #         insert into e_order(e_order_id, e_order_location, e_expert_id, e_order_illness,
-        #         e_order_time, e_order_type) values(%s, '%s', %s, '%s', '%s', '%s') """ %
-        #         (item['order_id'], item['location'], ret['e_expert_id'], item['illness'], item['time'], item['order_type']))
-        # # print ret['e_expert_id']
+        conn.execute("select * from e_order where e_order_id = '%s'" % (item['order_id']))
+        ans = conn.fetchone()
+        if ans:
+            return item
+        conn.execute("""
+                insert into e_order(e_order_id, e_order_location, e_expert_id, e_order_illness,
+                e_order_time, e_order_type) values(%s, '%s', %s, '%s', '%s', '%s') """ %
+                (item['order_id'], item['location'], ret['e_expert_id'], item['illness'], item['time'], item['order_type']))
+        # print ret['e_expert_id']
 
-        # return item
+        return item
 
 
 
@@ -406,9 +404,26 @@ class ExpertPipeline(object):
 
     def _do_upinsert(self, conn, item, spider):
         conn.execute("SET NAMES utf8")
-        conn.execute("select * from e_expert where e_expert_home_url = '%s' " % item['e_expert_home_url'])
+        conn.execute("select e_expert_id from e_expert where e_expert_home_url = '%s' " % item['e_expert_home_url'])
         ret = conn.fetchone()
         if ret:
+            expert_id = ret['e_expert_id']
+            for order in item['e_expert_phone_orders']:
+                # print order
+                p_id = order['e_phone_consult_order_patient_id']
+                ill = order['e_phone_consult_order_ill']
+                details = order['e_phone_consult_order_details']
+                conn.execute("""
+                        select * from e_phone_consult_order where e_expert_id = %s and e_phone_consult_order_patient_id = '%s' and
+                        e_phone_consult_order_ill = '%s' and e_phone_consult_order_details = '%s' """ %
+                        (expert_id, p_id, ill, details))
+                if conn.fetchone():
+                    continue
+                else:
+                    conn.execute("""
+                            insert into e_phone_consult_order(e_expert_id, e_phone_consult_order_patient_id, e_phone_consult_order_ill,
+                            e_phone_consult_order_details) values(%s, '%s', '%s', '%s') """ %
+                            (expert_id, p_id, ill, details))
             return item
 
         conn.execute("""insert into e_expert(e_expert_name, e_expert_title, e_expert_hospital,
