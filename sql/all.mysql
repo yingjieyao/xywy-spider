@@ -205,7 +205,7 @@ create table y_topic (
 );
 
 create table y_doctor (
-    y_doctor_id int primary key auto_increment,
+    y_doctor_id int primary key,
     y_doctor_url varchar(256),
     y_doctor_name varchar(128),
     y_doctor_title varchar(128),

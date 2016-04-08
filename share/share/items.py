@@ -55,5 +55,3 @@ class DoctorItem(Item):
     excel = Field()
     hospital = Field()
     intro = Field()
-
-

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import sys
 import json
 import scrapy
 from scrapy.spiders import Spider
@@ -20,10 +21,12 @@ class ReplySpider(scrapy.Spider):
     def __init__(self):
         files = open('topic_id.json', 'r')
         lines = files.readlines()
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
         self.start_urls = []
-        # for line in lines:
-        line = 44616
-        self.start_urls.append('http://club.xywy.com/doctorShare/index.php?type=share_operation&page=2&stat=15&share_id=' + str(line))
+        for line in lines:
+            # line = 44616
+            self.start_urls.append('http://club.xywy.com/doctorShare/index.php?type=share_operation&page=2&stat=15&share_id=' + str(line))
 
         files.close()
 
@@ -41,16 +44,19 @@ class ReplySpider(scrapy.Spider):
         return -1
 
     def parse(self, response):
-        print response.url
         sel = Selector(response)
         reply_list = sel.xpath('//div[@class="dis_List clearfix pr"]')
         for reply in reply_list:
             item = Reply()
             # print reply.extract()
-            item['topic_id'] = self.get_digit(response.url)
+            item['topic_id'] = self.get_digit(response.url[:-3])
             item['reply_id'] = reply.xpath('.//input[@id="review_id"]/@value').extract()[0]
-            item['doctor_id'] = json.loads(reply.xpath('./div[@class="dis_ListLe dis_ListLe_first fl mt20"]/@data-list').extract()[0])['userId']
-            item['reply_content'] = reply.xpath('.//p[@class="mt10"]//text()').extract()[0]
+            doctor_id = reply.xpath('./div[@class="dis_ListLe dis_ListLe_first fl mt20"]/@data-list').extract()
+            if doctor_id:
+                item['doctor_id'] = json.loads(reply.xpath('./div[@class="dis_ListLe dis_ListLe_first fl mt20"]/@data-list').extract()[0])['userId']
+            else:
+                continue
+            item['reply_content'] = self.__check(reply.xpath('.//p[@class="mt10"]//text()').extract())
             item['reply_like_number'] = reply.xpath('.//b[@class="fn f12"]/text()').extract()[0]
             item['doctor_url'] = 'http://club.xywy.com/doc_card/' + item['doctor_id'] + '/blog'
             item['reply_date'] = reply.xpath('.//span[@class="pl5 f12"]/text()').extract()[0]
@@ -73,7 +79,7 @@ class ReplySpider(scrapy.Spider):
             doctor['name'] = sel.xpath('//ul[@class="fl bdul f14"]/li[1]/span[2]/text()').extract()[0]
             doctor['title'] = sel.xpath('//ul[@class="fl bdul f14"]/li[2]/span[2]/text()').extract()[0]
             doctor['department'] = sel.xpath('//ul[@class="fl bdul f14"]/li[3]/span[2]/text()').extract()[0]
-            doctor['experience_level'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[1]/span/text()').extract()[0][:-1]
+            doctor['experience_level'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[1]/span/text()').extract()[0]
             doctor['best_reply'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[2]/span/text()').extract()[0][:-1]
             doctor['help_patients'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[3]/span/text()').extract()[0][:-1]
             doctor['reputation'] = len(sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[4]/cite').extract())
@@ -82,16 +88,40 @@ class ReplySpider(scrapy.Spider):
             doctor['excel'] = self.join_list(sel.xpath('//div[@class="dbjb f12 mt10"]/a/text()').extract())
             doctor['hospital'] = sel.xpath('//div[@class="dbjb f12 mt10"]/text()').extract()[-1]
             doctor['intro'] = sel.xpath('//div[@class="f12 dbjj mt10 mr20 pr"]/p/text()').extract()[0]
+            doctor['url'] = response.url
             tmp = sel.xpath('//div[@id="jeje"]')
             if tmp:
                 doctor['excel'] = tmp.xpath('./p[1]/text()').extract()[0][6:]
                 doctor['hospital'] = tmp.xpath('./p[2]/text()').extract()[0][5:]
                 doctor['intro'] = tmp.xpath('./div/text()').extract()[0][5:]
-            # print doctor['intro']
+
             item['doctor'] = doctor
-            return item
+            yield item
         # family doctor
         else:
-            print response.url
-            pass
+            family_doc_url = response.url.replace("share","home")
+            yield Request(url=family_doc_url, meta={'item': item}, callback=self.get_family_doctor)
 
+    def get_family_doctor(self, response):
+        sel = Selector(response)
+        item = response.meta['item']
+        doctor = DoctorItem()
+        doctor['url'] = response.url
+        doctor['experience_level'] = ''
+        doctor['best_reply'] = 0
+        doctor['name'] = sel.xpath('//div[@class="pa doc-attent-pop none"]/div/span[2]/em/text()').extract()[0]
+        doctor['title'] = sel.xpath('//div[@class=" lh200 pt10 f14"]//text()').extract()[0]
+
+        hospital_depart = sel.xpath('//div[@class=" lh200 pt10 f14"]//text()').extract()[1]
+        hos = hospital_depart.split("-")[0]
+        depart = hospital_depart.split("-")[1]
+        doctor['department'] = depart
+        doctor['hospital'] = hos
+        doctor['excel'] = self.__check(sel.xpath('//div[@class="HomeLe fl"]/div/div[@class="HomeJie f14 fwei pt20"][1]/div/text()').extract()[0])
+        doctor['intro'] = self.__check(sel.xpath('//div[@class="HomeLe fl"]/div/div[@class="HomeJie f14 fwei pt20"][2]/div/text()').extract()[0])
+        doctor['help_patients'] = sel.xpath('//div[@class="f14 fwei HomeHelp tc lh200 clearfix pt10"]/span[1]/text()').extract()[0]
+        doctor['fan_number'] = 0
+        doctor['thanks'] = 0
+        doctor['reputation'] = 0
+        item['doctor'] = doctor
+        return item

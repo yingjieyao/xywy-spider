@@ -6,6 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+import sys
 import json
 import codecs
 from twisted.enterprise import adbapi
@@ -28,6 +29,8 @@ class SharePipeline2(object):
 class SharePipeline(object):
     def __init__(self, dbpool):
         self.dbpool = dbpool
+        reload(sys)
+        sys.setdefaultencoding( "utf-8" )
 
     @classmethod
     def from_settings(cls, settings):
@@ -85,21 +88,33 @@ class ReplyPipeline(object):
         return d
 
     def _do_upinsert(self, conn, item, spider):
-        # print item['doctor']['name']
-#         conn.execute("SET NAMES utf8")
-#         conn.execute("select y_reply_id from y_reply where y_reply_id = %s" % item['reply_id'])
-#         ret = conn.fetchone()
-#         if ret:
-#             return item
-#
-#         conn.execute("""
-#                 insert into y_reply(y_reply_id, y_topic_id, y_doctor_id, y_reply_content, y_reply_like_number, y_reply_date,
-#                 y_reply_follow_content, y_reply_follow_doctor_id, y_reply_follow_date) values(%s, %s, %s, '%s', '%s', '%s',
-#                 '%s', '%s', '%s') """ % (item['reply_id'], item['topic_id'], item['doctor_id'], item['reply_content'],
-#                     item['reply_like_number'], item['reply_date'], item['reply_follow_content'], item['follow_doctor_id'],
-#                     item['follow_date']))
-#
-#         return item
-#
-#
-#
+        doctor = item['doctor']
+        conn.execute("SET NAMES utf8")
+        conn.execute("select y_doctor_id from y_doctor where y_doctor_id = %s" % item['doctor_id'])
+        ret = conn.fetchone()
+        if ret:
+            pass
+        else:
+            conn.execute("""
+                insert into y_doctor(y_doctor_id, y_doctor_url, y_doctor_name, y_doctor_title, y_doctor_department,
+                y_doctor_experience_level, y_doctor_best_reply, y_doctor_help_patients, y_doctor_reputation, y_doctor_thanks,
+                y_doctor_fan_number, y_doctor_excel, y_doctor_hospital, y_doctor_intro) values(%s, '%s', '%s', '%s', '%s',
+                '%s', '%s', '%s', '%s', '%s','%s', '%s', '%s', '%s') """ %
+                (item['doctor_id'], doctor['url'], doctor['name'], doctor['title'],
+                    doctor['department'], doctor['experience_level'], doctor['best_reply'], doctor['help_patients'], doctor['reputation'],
+                    doctor['thanks'], doctor['fan_number'], doctor['excel'], doctor['hospital'], doctor['intro'][:-1]))
+
+        conn.execute("select y_reply_id from y_reply where y_reply_id = %s" % item['reply_id'])
+        ret = conn.fetchone()
+        if ret:
+            return item
+
+
+        conn.execute("""
+                insert into y_reply(y_reply_id, y_topic_id, y_doctor_id, y_reply_content, y_reply_like_number, y_reply_date,
+                y_reply_follow_content, y_reply_follow_doctor_id, y_reply_follow_date) values(%s, %s, %s, '%s', '%s', '%s',
+                '%s', '%s', '%s') """ % (item['reply_id'], item['topic_id'], item['doctor_id'], item['reply_content'],
+                    item['reply_like_number'], item['reply_date'], item['reply_follow_content'], item['follow_doctor_id'],
+                    item['follow_date']))
+
+

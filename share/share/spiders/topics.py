@@ -40,8 +40,6 @@ class TopicsSpider(scrapy.Spider):
         for li in lists:
             page_id = self.get_digit(li)
             yield Request(url = li, callback = self.get_pages)
-            # yield Request(url = 'http://club.xywy.com/doctorShare/index.php?type=share_operation&page=2&stat=15&share_id=' + page_id
-            # , callback=self.get_pages)
 
         home_url = response.url.split("?")[0]
         # print home_url
@@ -54,8 +52,7 @@ class TopicsSpider(scrapy.Spider):
                 if response.url.endswith(d):
                     next_digit = int(d) + 1
                     break
-            if next_digit < 4:
-                yield Request(url = home_url + '?page=' + str(next_digit), callback = self.parse)
+            yield Request(url = home_url + '?page=' + str(next_digit), callback = self.parse)
 
     def get_pages(self, response):
         sel = Selector(response)
