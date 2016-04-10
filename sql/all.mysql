@@ -1,5 +1,5 @@
 # create database circle;
-use xunyiwenyao_test;
+use xunyiwenyao;
 drop table if exists `expert_circle`;
 drop table if exists `illness_user`;
 drop table if exists `expert_illness`;
@@ -216,19 +216,19 @@ create table y_doctor (
     y_doctor_reputation int,
     y_doctor_thanks int,
     y_doctor_fan_number int,
-    y_doctor_excel varchar(1024),
+    y_doctor_excel text,
     y_doctor_hospital varchar(128),
-    y_doctor_intro varchar(2048)
+    y_doctor_intro text
 );
 
 create table y_reply (
     y_reply_id int primary key auto_increment,
     y_topic_id int,
     y_doctor_id int,
-    y_reply_content varchar(32767),
+    y_reply_content text,
     y_reply_like_number int,
     y_reply_date varchar(128),
-    y_reply_follow_content varchar(32767),
+    y_reply_follow_content text,
     y_reply_follow_doctor_id int,
     y_reply_follow_date date,
     foreign key(y_topic_id) references `y_topic`(y_topic_id),
@@ -247,7 +247,7 @@ create table a_topic (
     a_topic_owner_sex varchar(10),
     a_topic_owner_age int,
     a_topic_date date,
-    a_topic_content varchar(32767),
+    a_topic_content text,
     a_topic_reply_number int,
     foreign key(department_id_1) references `department`(department_id),
     foreign key(department_id_2) references `department`(department_id)
@@ -267,10 +267,10 @@ create table a_reply(
     a_topic_id int,
     a_reply_date date,
     a_reply_owner_id int,
-    a_reply_content varchar(32767),
+    a_reply_content text,
     a_reply_help_number int,
     a_reply_adopt int,
-    a_reply_follow_content varchar(32767),
+    a_reply_follow_content text,
     a_reply_follow_owner_id int,
     a_reply_follow_date date,
     foreign key(a_topic_id) references `a_topic`(a_topic_id),
