@@ -19,7 +19,9 @@ MYSQL_HOST = 'localhost'
 MYSQL_DBNAME = 'xunyiwenyao'
 MYSQL_USER = 'root'
 MYSQL_PASSWD = 'yyjmac'
+
 LOG_LEVEL = 'INFO'
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'xywy (+http://www.yourdomain.com)'
 

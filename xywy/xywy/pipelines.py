@@ -11,8 +11,6 @@ import codecs
 from twisted.enterprise import adbapi
 
 import MySQLdb.cursors
-from consult_pipe import ConsultPipeline
-
 class ExpertPipeline2(object):
     def __init__(self):
         self.file1 = codecs.open('d_article_url.json', 'w', encoding='utf-8')
@@ -315,7 +313,6 @@ class CirclePipeline(object):
 
     def _do_upinsert(self, conn, item, spider):
         conn.execute("SET NAMES utf8")
-        print item["circle_owner_id"]
         conn.execute("select * from circle where circle_name = '%s' " % item['circle_name'])
         ret = conn.fetchone()
         if ret:

@@ -24,11 +24,11 @@ class CircleSpider(Spider):
         urls = sel.xpath('//a[@class="mr5"]')
 
         for url in urls:
-            circle = CircleItem()
-            circle['url'] = url.xpath('@href').extract()
-            yield Request(circle['url'][0], callback=self.parse_item)
+            next_url = url.xpath('@href').extract()
+            yield Request(next_url[0], callback=self.parse_item)
 
     def parse_item(self, response):
+        print response.url
         sel = Selector(response)
         item = CircleItem()
 

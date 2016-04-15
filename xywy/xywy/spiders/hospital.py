@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 from scrapy.spiders import CrawlSpider, Rule, Spider
 from scrapy.selector import Selector

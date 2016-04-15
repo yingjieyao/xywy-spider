@@ -58,6 +58,8 @@ class ConsultSpider(Spider):
         mode = re.compile(r'\d+$')
         digits = mode.findall(response.url[:-4])
         item = EconsultItem()
+        if not ditis:
+            return
         item['consult_id'] = digits[0]
         item['expert_url'] = response.meta['home_url']
 

@@ -82,6 +82,3 @@ class TopicsSpider(scrapy.Spider):
         item['owner_type'] = 'doctor'
         return item
         # item['topic_date'] = ## hard to get
-
-
-

@@ -1,4 +1,4 @@
-# create database circle;
+create database if not exists xunyiwenyao;
 use xunyiwenyao;
 drop table if exists `expert_circle`;
 drop table if exists `illness_user`;
@@ -33,7 +33,7 @@ create table `topic` (
     partition_id int(11),
     circle_id int(11),
     topic_title varchar(128),
-    topic_date date,
+    topic_date datetime,
     topic_views int(22),
     topic_reply_number int(11),
     topic_content varchar(500),
@@ -69,10 +69,10 @@ create table `reply` (
     topic_id int(11),
     patient_id int(11),
     reply_content varchar(200),
-    reply_time date,
+    reply_time datetime,
     reply_follow_patient_id int(11),
     reply_follow_content varchar(200),
-    reply_follow_date date,
+    reply_follow_date datetime,
     foreign key(topic_id) references topic(topic_id),
     foreign key(patient_id) references `patient`(patient_id)
 );
@@ -169,7 +169,7 @@ create table evaluate (
 	evaluate_id int primary key auto_increment,
 	patient_id int,
 	f_doctor_id int,
-	evaluate_date date,
+	evaluate_date datetime,
 	evaluate_score int,
 	evaluate_content varchar(128),
 	foreign key(f_doctor_id) references family_doctor(f_doctor_id),
@@ -182,7 +182,7 @@ create table family_doctor_sell (
 	patient_name varchar(128),
 	f_sell_type varchar (128),
 	f_sell_price int,
-	f_sell_date date,
+	f_sell_date datetime,
 	foreign key(f_doctor_id) references family_doctor(f_doctor_id)
 );
 
@@ -201,7 +201,7 @@ create table y_topic (
     y_topic_follow_number int,
     y_topic_type varchar(128),
     y_topic_owner_type varchar(128),
-    y_topic_date date
+    y_topic_date datetime
 );
 
 create table y_doctor (
@@ -230,7 +230,7 @@ create table y_reply (
     y_reply_date varchar(128),
     y_reply_follow_content text,
     y_reply_follow_doctor_id int,
-    y_reply_follow_date date,
+    y_reply_follow_date datetime,
     foreign key(y_topic_id) references `y_topic`(y_topic_id),
     foreign key(y_doctor_id) references `y_doctor`(y_doctor_id)
 );
@@ -246,7 +246,7 @@ create table a_topic (
     a_topic_owner_id int,
     a_topic_owner_sex varchar(10),
     a_topic_owner_age int,
-    a_topic_date date,
+    a_topic_date datetime,
     a_topic_content text,
     a_topic_reply_number int,
     foreign key(department_id_1) references `department`(department_id),
@@ -265,14 +265,14 @@ create table a_doctor(
 create table a_reply(
     a_reply_id int primary key auto_increment,
     a_topic_id int,
-    a_reply_date date,
+    a_reply_date datetime,
     a_reply_owner_id int,
     a_reply_content text,
     a_reply_help_number int,
     a_reply_adopt int,
     a_reply_follow_content text,
     a_reply_follow_owner_id int,
-    a_reply_follow_date date,
+    a_reply_follow_date datetime,
     foreign key(a_topic_id) references `a_topic`(a_topic_id),
     foreign key(a_reply_owner_id) references `a_doctor`(a_doctor_id)
 );
@@ -325,7 +325,7 @@ create table m_evaluate (
 	m_evaluate_content varchar(128),
 	m_evaluate_illness varchar(128),
 	m_evaluate_location varchar(128),
-	m_evaluate_date date,
+	m_evaluate_date datetime,
 	topic_id int,
 	foreign key(medicine_id) references medicine(medicine_id),
 	foreign key(topic_id) references a_topic(a_topic_id)
@@ -432,8 +432,8 @@ create table e_expert (
 	e_expert_consult_number int,
 	e_expert_praise int,
 	e_expert_exp varchar(128),
-	e_expert_last_online_time date,
-	e_expert_join_time date,
+	e_expert_last_online_time datetime,
+	e_expert_join_time datetime,
 	e_expert_reply_number int,
 	e_expert_appointment_success_number int,
 	e_expert_vote_number int,
@@ -463,10 +463,10 @@ create table e_consult (
 	e_consult_illness_detail varchar(128),
 	e_consult_previous varchar(128),
 	e_consult_want_help varchar(128),
-	e_consult_date date,
+	e_consult_date datetime,
 	e_consult_analysis varchar(128),
 	e_consult_suggest varchar(128),
-	e_consult_reply_date date,
+	e_consult_reply_date datetime,
 	e_consult_like_number int,
 	e_consult_dislike_number int,
 	foreign key(e_expert_id) references e_expert(e_expert_id)
@@ -541,7 +541,7 @@ create table e_experience (
 	e_experience_illness varchar(128),
 	e_experience_effect varchar(128),
 	e_experience_attitude varchar(128),
-	e_experience_date date,
+	e_experience_date datetime,
 	e_experience_content varchar(128),
 	e_experience_like_number varchar(128),
 	foreign key(e_expert_id) references e_expert(e_expert_id)
