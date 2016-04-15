@@ -90,7 +90,7 @@ class ReplySpider(scrapy.Spider):
             doctor['name'] = sel.xpath('//ul[@class="fl bdul f14"]/li[1]/span[2]/text()').extract()[0]
             doctor['title'] = sel.xpath('//ul[@class="fl bdul f14"]/li[2]/span[2]/text()').extract()[0]
             doctor['department'] = sel.xpath('//ul[@class="fl bdul f14"]/li[3]/span[2]/text()').extract()[0]
-            doctor['experience_level'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[1]/span/text()').extract()[0]
+            doctor['experience_level'] = self.__check(sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[1]/span/text()').extract())
             doctor['best_reply'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[2]/span/text()').extract()[0][:-1]
             doctor['help_patients'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[3]/span/text()').extract()[0][:-1]
             doctor['reputation'] = len(sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[4]/cite').extract())
