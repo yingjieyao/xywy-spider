@@ -89,6 +89,7 @@ class ReplyPipeline(object):
 
     def _do_upinsert(self, conn, item, spider):
         doctor = item['doctor']
+        print item['topic_id']
         conn.execute("SET NAMES utf8")
         conn.execute("select y_doctor_id from y_doctor where y_doctor_id = %s" % item['doctor_id'])
         ret = conn.fetchone()

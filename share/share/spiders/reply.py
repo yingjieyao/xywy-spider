@@ -13,11 +13,19 @@ class ReplySpider(scrapy.Spider):
     name = "Reply"
 
     custom_settings = {
-        'ITEM_PIPELINES' : {
-            'share.pipelines.ReplyPipeline': 300,
-        }
-    }
+            'ITEM_PIPELINES' : {
+                'share.pipelines.ReplyPipeline': 300,
+                }
+            }
 
+    headers = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip,deflate",
+            "Accept-Language": "en-US,en;q=0.8,zh-TW;q=0.6,zh;q=0.4",
+            "Connection": "keep-alive",
+            "Content-Type":" application/x-www-form-urlencoded; charset=UTF-8",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
+            }
     def __init__(self):
         files = open('topic_id.json', 'r')
         lines = files.readlines()
@@ -25,10 +33,13 @@ class ReplySpider(scrapy.Spider):
         sys.setdefaultencoding('utf-8')
         self.start_urls = []
         for line in lines:
-            # line = 44616
+            # line = '45183%0A'
             self.start_urls.append('http://club.xywy.com/doctorShare/index.php?type=share_operation&page=2&stat=15&share_id=' + str(line))
 
         files.close()
+
+    def make_requests_from_url(self, url):
+        return Request(url = url, headers = self.headers)
 
     def __check(self, st):
         if st:
@@ -63,7 +74,7 @@ class ReplySpider(scrapy.Spider):
             item['reply_follow_content'] = ''
             item['follow_doctor_id'] = ''
             item['follow_date'] = ''
-            yield Request(url=item['doctor_url'], meta={'item': item}, callback=self.get_doctor)
+            yield Request(url=item['doctor_url'], meta={'item': item}, callback=self.get_doctor, headers=self.headers)
 
     def join_list(self, lists):
         ret = ''
@@ -95,12 +106,12 @@ class ReplySpider(scrapy.Spider):
                 doctor['hospital'] = tmp.xpath('./p[2]/text()').extract()[0][5:]
                 doctor['intro'] = tmp.xpath('./div/text()').extract()[0][5:]
 
-            item['doctor'] = doctor
-            yield item
+                item['doctor'] = doctor
+                yield item
         # family doctor
-        else:
-            family_doc_url = response.url.replace("share","home")
-            yield Request(url=family_doc_url, meta={'item': item}, callback=self.get_family_doctor)
+            else:
+                family_doc_url = response.url.replace("share","home")
+                yield Request(url=family_doc_url, meta={'item': item}, callback=self.get_family_doctor, headers = self.headers)
 
     def get_family_doctor(self, response):
         sel = Selector(response)

@@ -210,7 +210,7 @@ create table y_doctor (
     y_doctor_name varchar(128),
     y_doctor_title varchar(128),
     y_doctor_department varchar(128),
-    y_doctor_experience_level int,
+    y_doctor_experience_level text,
     y_doctor_best_reply int,
     y_doctor_help_patients int,
     y_doctor_reputation int,
