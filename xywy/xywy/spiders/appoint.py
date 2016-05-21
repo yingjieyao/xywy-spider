@@ -26,6 +26,7 @@ class AppointSpider(Spider):
                 self.start_urls.append(url[:-1] + '/yuyue.php?type=list')
 
         article_url.close()
+        print len(self.start_urls)
 
 
     def __check(self, lists):
@@ -34,13 +35,14 @@ class AppointSpider(Spider):
         return ''
 
     def parse(self, response):
+        print response.url
         sel = Selector(response)
         res = sel.xpath('//span[@class="fl w560 lh180 pub_txtalign"]')
         item = EappointItem()
         item['e_range'] = ''
         item['require'] = ''
         item['region'] = ''
-        item['expert_url'] = response.url[:-10]
+        item['expert_url'] = response.url[:-20]
 
         if not res:
             return item

@@ -11,6 +11,7 @@ import codecs
 from twisted.enterprise import adbapi
 
 import MySQLdb.cursors
+
 class ExpertPipeline2(object):
     def __init__(self):
         self.file1 = codecs.open('d_article_url.json', 'w', encoding='utf-8')
@@ -54,15 +55,15 @@ class EappointmentPipeline(object):
         ret = conn.fetchone()
         if not ret:
             return item
-        print item['e_expert_id']
-        conn.execute("select * from e_order where e_order_id = '%s'" % (item['order_id']))
-        ans = conn.fetchone()
-        if ans:
-            return item
+        # print ret['e_expert_id']
+        # conn.execute("select * from e_order where e_order_id = '%s'" % (item['order_id']))
+        # ans = conn.fetchone()
+        # if ans:
+        #     return item
         conn.execute("""
-                insert into e_order(e_order_id, e_order_location, e_expert_id, e_order_illness,
-                e_order_time, e_order_type) values(%s, '%s', %s, '%s', '%s', '%s') """ %
-                (item['order_id'], item['location'], ret['e_expert_id'], item['illness'], item['time'], item['order_type']))
+                insert into e_appointment(e_expert_id, e_appointment_range, e_appointment_region, e_appointment_require
+                ) values(%s, '%s', %s, '%s') """ %
+                (ret['e_expert_id'], item['e_range'], item['region'], item['require']))
         # print ret['e_expert_id']
 
         return item
