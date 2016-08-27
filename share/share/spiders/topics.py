@@ -34,6 +34,18 @@ class TopicsSpider(scrapy.Spider):
                 return d
         return -1
 
+    headers = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip,deflate",
+            "Accept-Language": "en-US,en;q=0.8,zh-TW;q=0.6,zh;q=0.4",
+            "Connection": "keep-alive",
+            "Content-Type":" application/x-www-form-urlencoded; charset=UTF-8",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
+            }
+
+    def make_requests_from_url(self, url):
+        return Request(url = url, headers= self.headers)
+
     def parse(self, response):
         sel = Selector(response)
         lists = sel.xpath('//div[@class="tab_ConR fl"]/div/a/@href').extract()
@@ -41,12 +53,16 @@ class TopicsSpider(scrapy.Spider):
             page_id = self.get_digit(li)
             yield Request(url = li, callback = self.get_pages)
 
+        # print response.body
         home_url = response.url.split("?")[0]
         # print home_url
+        # print response.url
         current = len(lists)
-        total_page = sel.xpath('//div[@class="DocFen mt30 f14 cb"]/a[4]').extract()
-        for i in range(2, total_page):
-            yield Request(url = home_url + '?page=' + str(next_digit), callback = self.parse)
+        if response.url.endswith('doctorShare/'):
+            total = sel.xpath('//div[@class="DocFen mt30 f14 cb"]/a[4]/text()').extract()[0]
+            total = int(total)
+            for i in range(2, total):
+                yield Request(url = home_url + '?page=' + str(i), callback = self.parse)
 
         # if current >= 10:
         #     next_digit = 2
