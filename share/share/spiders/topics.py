@@ -51,7 +51,7 @@ class TopicsSpider(scrapy.Spider):
         lists = sel.xpath('//div[@class="tab_ConR fl"]/div/a/@href').extract()
         for li in lists:
             page_id = self.get_digit(li)
-            yield Request(url = li, callback = self.get_pages)
+            yield Request(url = li, callback = self.get_pages, headers = self.headers)
 
         # print response.body
         home_url = response.url.split("?")[0]
@@ -62,7 +62,7 @@ class TopicsSpider(scrapy.Spider):
             total = sel.xpath('//div[@class="DocFen mt30 f14 cb"]/a[4]/text()').extract()[0]
             total = int(total)
             for i in range(2, total):
-                yield Request(url = home_url + '?page=' + str(i), callback = self.parse)
+                yield Request(url = home_url + '?page=' + str(i), callback = self.parse, headers = self.headers)
 
         # if current >= 10:
         #     next_digit = 2
@@ -80,8 +80,8 @@ class TopicsSpider(scrapy.Spider):
         item = Topic()
         item['topic_id'] = self.get_digit(response.url)
         # print item['topic_id']
-        item['title'] = sel.xpath('//div[@class="fa_Biao2"]/div/em/text()').extract()[0]
-        item['reply_number'] = sel.xpath('//div[@class="fr share_btns"]/a[1]/span/text()').extract()[0]
+        item['title'] = self.__check(sel.xpath('//div[@class="fa_Biao2"]/div/em/text()').extract())
+        item['reply_number'] = self.__check(sel.xpath('//div[@class="fr share_btns"]/a[1]/span/text()').extract())
         item['like_number'] = sel.xpath('//div[@class="fr share_btns"]/a[2]/span/text()').extract()[0]
         if not item['reply_number'].isdigit():
             item['reply_number'] = 0
