@@ -97,7 +97,13 @@ class ReplySpider(scrapy.Spider):
             else:
                 doctor['best_reply'] = ''
 
-            doctor['help_patients'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[3]/span/text()').extract()[0][:-1]
+            tmp = self.__check(sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[3]/span/text()').extract())[0][:-1]
+            if len(tmp):
+                tmp = tmp[0][:-1]
+            else:
+                tmp = 0
+            doctor['help_patients'] = tmp
+
             doctor['reputation'] = len(sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[4]/cite').extract())
             doctor['thanks'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[5]/span/text()').extract()[0][:-1]
             doctor['fan_number'] = sel.xpath('//ul[@class="bdxli pt10 f12 clearfix black"]/li[6]/span/text()').extract()[0][:-1]
