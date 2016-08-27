@@ -44,15 +44,19 @@ class TopicsSpider(scrapy.Spider):
         home_url = response.url.split("?")[0]
         # print home_url
         current = len(lists)
-        if current >= 10:
-            next_digit = 2
-            mode = re.compile(r'\d+$')
-            digits = mode.findall(response.url)
-            for d in digits:
-                if response.url.endswith(d):
-                    next_digit = int(d) + 1
-                    break
+        total_page = sel.xpath('//div[@class="DocFen mt30 f14 cb"]/a[4]').extract()
+        for i in range(2, total_page):
             yield Request(url = home_url + '?page=' + str(next_digit), callback = self.parse)
+
+        # if current >= 10:
+        #     next_digit = 2
+        #     mode = re.compile(r'\d+$')
+        #     digits = mode.findall(response.url)
+        #     for d in digits:
+        #         if response.url.endswith(d):
+        #             next_digit = int(d) + 1
+        #             break
+        #     yield Request(url = home_url + '?page=' + str(next_digit), callback = self.parse)
 
     def get_pages(self, response):
         sel = Selector(response)
